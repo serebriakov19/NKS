@@ -1,0 +1,93 @@
+// Лабораторна робота №1
+// Виконав студент групи ІО-71 Серебряков Роман
+// Варіант №22
+
+let times = [315, 245, 11, 290, 47, 49, 595, 618, 559,
+    530, 369, 1035, 546, 673, 11, 314, 1156, 33,
+    1201, 1055, 241, 91, 6, 1596, 680, 1100, 97,
+    307, 771, 2063, 46, 25, 42, 112, 124, 245,
+    19, 214, 719, 38, 278, 285, 719, 274, 110,
+    543, 72, 176, 650, 2105, 546, 1088, 187, 36,
+    213, 148, 813, 933, 857, 1512, 669, 307, 41,
+    190, 99, 215, 260, 363, 388, 532, 1486,
+    1445, 516, 351, 497, 67, 1200, 142, 50, 629,
+    252, 410, 772, 973, 13, 410, 1401, 1656,
+    721, 75, 243, 1318, 535, 629, 266, 487, 349,
+    38, 95, 1533];
+
+let Gamma = 0.98;
+let time1 = 1098;
+let time2 = 2055;
+
+let listOfIntervals = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+let densities = [];
+let PList = [];
+
+times.sort((a, b) => a - b);
+
+let Tcp = times.reduce((sum, current) => sum + current) / times.length;
+
+let intervalLen = (times[times.length - 1] - times[0]) / 10;
+
+for (let i = 0; i < 10; i++) {
+    for (let time of times) {
+        if (i * intervalLen <= time) {
+            if (time <= (i + 1) * intervalLen) {
+                listOfIntervals[i] += 1;
+            }
+        }
+    }
+}
+
+for (let interval of listOfIntervals) {
+    densities.push(interval / (times.length * intervalLen));
+}
+
+let areaSum = 1;
+for (let i = 0; i < 10; i++) {
+    PList.push(areaSum);
+    areaSum -= densities[i] * intervalLen;
+}
+
+let pForCompare1 = [];
+for (let p of PList) {
+    if (p < Gamma) {
+        pForCompare1.push(p)
+    }
+}
+let pLess = Math.max(...pForCompare1);
+
+let pForCompare2 = [];
+for (let p of PList) {
+    if (p > Gamma) {
+        pForCompare2.push(p)
+    }
+}
+let pMore = Math.min(...pForCompare2);
+
+let indexLess = PList.indexOf(pLess);
+
+let d = (pLess - Gamma) / (pLess - pMore);
+
+let T = (intervalLen * indexLess) - intervalLen * d;
+
+function getP(time1) {
+    let sum = 1;
+    let allInterval = +(Math.floor(time1 / intervalLen));
+    for (let i = 0; i < allInterval; i++) {
+        sum -= densities[i] * intervalLen;
+    }
+    sum -= densities[allInterval] * (time1 % intervalLen);
+    return sum
+}
+
+
+let f = densities[Math.floor(time2 / intervalLen)];
+let p = getP(time2);
+let λ = f / p;
+
+
+console.log(`Середній наробіток до відмови Tcp = ${Tcp} \n`);
+console.log(`γ-відсотковий наробіток на відмову Tγ = ${T} \n`);
+console.log(`Ймовірність безвідмовної роботи на час ${time1} годин = ${getP(time1)} \n`);
+console.log(`Інтенсивність відмов на час ${time2} годин = ${λ}`);
