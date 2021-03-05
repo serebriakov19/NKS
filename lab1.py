@@ -44,10 +44,10 @@ def get_T(gamma):
     p_less = max([p for p in P_list if p < gamma])
     p_more = min([p for p in P_list if p > gamma])
 
-    index_more = P_list.index(p_more)
+    index_less = P_list.index(p_less)
 
-    d = (p_more - gamma) / (p_more - p_less)
-    T = index_more + interval_len * d
+    d = (p_less - gamma) / (p_less - p_more)
+    T = (interval_len * index_less) - interval_len * d
     return T
 
 
