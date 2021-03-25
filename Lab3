@@ -1,0 +1,92 @@
+import math
+
+P1 = 0.84
+P2 = 0.84
+P3 = 0.91
+P4 = 0.60
+P5 = 0.44
+P6 = 0.74
+P7 = 0.57
+P8 = 0.79
+
+
+def func(P1, P2, P3, P4, P5, P6, P7, P8):
+    R23 = 1 - (1 - P2) * (1 - P3)
+    R24 = 1 - (1 - P2) * (1 - P4)
+    R34 = 1 - (1 - P3) * (1 - P4)
+    R56 = 1 - (1 - P5) * (1 - P6)
+    R57 = 1 - (1 - P5) * (1 - P7)
+    R67 = 1 - (1 - P6) * (1 - P7)
+
+    R123 = P1 * R23
+    R2456 = R24 * R56
+    R3457 = R34 * R57
+    R678 = R67 * P8
+
+    S1 = 1 - (1 - R2456) * (1 - R3457)
+
+    T1 = R123 * S1 * R678
+
+    return T1
+
+
+print("Ймовірність безвідмовної роботи системи протягом 10 годин = ", func(P1, P2, P3, P4, P5, P6, P7, P8))
+
+time = 711
+k1 = 3
+k2 = 2
+
+P_system = func(P1, P2, P3, P4, P5, P6, P7, P8)
+Q_system = 1 - P_system
+T_system = -time / math.log(P_system, math.e)
+
+Q_reserved_system = (1 - P_system)**(k1 + 1)
+P_reserved_system = 1 - Q_reserved_system
+T_reserved_system = -time / math.log(P_reserved_system, math.e)
+G_q = Q_reserved_system / Q_system
+G_p = P_reserved_system / P_system
+G_t = T_reserved_system / T_system
+
+Q_reserved_1 = (1 - P1)**(k2 + 1)
+Q_reserved_2 = (1 - P2)**(k2 + 1)
+Q_reserved_3 = (1 - P3)**(k2 + 1)
+Q_reserved_4 = (1 - P4)**(k2 + 1)
+Q_reserved_5 = (1 - P5)**(k2 + 1)
+Q_reserved_6 = (1 - P6)**(k2 + 1)
+Q_reserved_7 = (1 - P7)**(k2 + 1)
+Q_reserved_8 = (1 - P8)**(k2 + 1)
+
+P_reserved_1 = 1 - Q_reserved_1
+P_reserved_2 = 1 - Q_reserved_2
+P_reserved_3 = 1 - Q_reserved_3
+P_reserved_4 = 1 - Q_reserved_4
+P_reserved_5 = 1 - Q_reserved_5
+P_reserved_6 = 1 - Q_reserved_6
+P_reserved_7 = 1 - Q_reserved_7
+P_reserved_8 = 1 - Q_reserved_8
+
+P_all_reserved_system = func(P_reserved_1, P_reserved_2, P_reserved_3, P_reserved_4, P_reserved_5, P_reserved_6, P_reserved_7, P_reserved_8)
+Q_all_reserved_system = 1 - P_all_reserved_system
+T_all_reserved_system = -time / math.log(P_all_reserved_system, math.e)
+G_all_q = Q_all_reserved_system / Q_system
+G_all_p = P_all_reserved_system / P_system
+G_all_t = T_all_reserved_system / T_system
+
+print("Базова імовірність безвідмовної роботи = {}\n"
+      "Базова імовірність відмови = {}\n"
+      "Базовий середній наробіток на відмову = {}\n".format(P_system, Q_system, T_system))
+
+print("Імовірність безвідмовної роботи системи з навантаженим загальним резервуванням = {}\n"
+      "Імовірність відмови системи з навантаженим загальним резервуванням = {}\n"
+      "Середній час роботи системи з навантаженим загальним резервуванням = {}".format(P_reserved_system, Q_reserved_system, T_reserved_system))
+print("Виграш системи з навантаженим загальним резервуванням по імовірності безвідмовної роботи = {}\n"
+      "Виграш системи з навантаженим загальним резервуванням по імовірності відмови = {}\n"
+      "Виграш системи з навантаженим загальним резервуванням по середньому часу роботи = {}\n".format(G_p, G_q, G_t))
+
+print("Імовірність безвідмовної роботи системи з навантаженим розподіленим резервуванням = {}\n"
+      "Імовірність відмови системи з навантаженим розподіленим резервуванням = {}\n"
+      "Середній час роботи системи з навантаженим розподіленим резервуванням = {}".format(P_all_reserved_system, Q_all_reserved_system, T_all_reserved_system))
+print("Виграш системи з навантаженим розподіленим резервуванням по імовірності безвідмовної роботи = {}\n"
+      "Виграш системи з навантаженим розподіленим резервуванням по імовірності відмови = {}\n"
+      "Виграш системи з навантаженим розподіленим резервуванням по середньому часу роботи = {}\n".format(G_all_p, G_all_q, G_all_t))
+
